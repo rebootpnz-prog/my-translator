@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Переводчик</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;1,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f12;
+    --surface: #13161b;
+    --border: #1e2330;
+    --accent: #4a7fa5;
+    --accent2: #c47c3e;
+    --accent3: #5a8f6a;
+    --text: #d4d8e2;
+    --text-dim: #6b7280;
+    --text-bright: #eef0f5;
+    --col1: rgba(74,127,165,0.06);
+    --col2: rgba(196,124,62,0.06);
+    --col3: rgba(90,143,106,0.06);
+    --radius: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Spectral', Georgia, serif;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+  }
+
+  /* ── HEADER ── */
+  header {
+    padding: 18px 20px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    font-family: 'Spectral', serif;
+    font-weight: 300;
+    font-size: 18px;
+    letter-spacing: 0.08em;
+    color: var(--text-bright);
+  }
+  .logo span { color: var(--accent); }
+
+  /* ── MODE SWITCH ── */
+  .mode-switch {
+    display: flex;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+  }
+  .mode-btn {
+    padding: 6px 12px;
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .mode-btn.active {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  /* ── CONTROLS ── */
+  .controls {
+    padding: 16px 20px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .mic-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  /* Record button */
+  .rec-btn {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .rec-btn:active { transform: scale(0.93); }
+  .rec-btn.recording {
+    border-color: #e05555;
+    background: rgba(224,85,85,0.12);
+    animation: pulse 1.4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(224,85,85,0.3); }
+    50% { box-shadow: 0 0 0 10px rgba(224,85,85,0); }
+  }
+  .rec-icon { font-size: 20px; }
+
+  /* Meter */
+  .meter-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .meter-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    display: flex;
+    justify-content: space-between;
+  }
+  .meter-bar {
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .meter-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 3px;
+    transition: width 0.1s;
+  }
+
+  /* Gain slider */
+  .gain-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+  .gain-row input[type=range] {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--border);
+    outline: none;
+  }
+  .gain-row input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+  }
+  .gain-val {
+    width: 34px;
+    text-align: right;
+    color: var(--text);
+  }
+
+  /* Noise toggle */
+  .noise-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+  .toggle {
+    width: 36px;
+    height: 20px;
+    background: var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.2s;
+    border: none;
+  }
+  .toggle.on { background: var(--accent); }
+  .toggle::after {
+    content: '';
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    background: #fff;
+    border-radius: 50%;
+    top: 3px;
+    left: 3px;
+    transition: left 0.2s;
+  }
+  .toggle.on::after { left: 19px; }
+
+  /* ── STATUS BAR ── */
+  .status-bar {
+    padding: 8px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    min-height: 30px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--text-dim);
+    flex-shrink: 0;
+  }
+  .status-dot.active { background: #4caf50; animation: blink 1s infinite; }
+  .status-dot.error  { background: #e05555; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* ── TABLE HEADER ── */
+  .table-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    border-bottom: 2px solid var(--border);
+    position: sticky;
+    top: 81px;
+    z-index: 90;
+  }
+  .col-head {
+    padding: 10px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    background: var(--surface);
+  }
+  .col-head:nth-child(1) { color: var(--accent); }
+  .col-head:nth-child(2) { color: var(--accent2); }
+  .col-head:nth-child(3) { color: var(--accent3); }
+
+  /* ── PHRASES LIST ── */
+  .phrases {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 40px;
+  }
+
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 30px;
+    gap: 12px;
+    color: var(--text-dim);
+    font-style: italic;
+    font-size: 15px;
+    text-align: center;
+    opacity: 0.6;
+  }
+  .empty-state .big { font-size: 36px; opacity: 0.4; }
+
+  /* Phrase row */
+  .phrase-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    border-bottom: 1px solid var(--border);
+    animation: rowIn 0.35s ease;
+  }
+  @keyframes rowIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .col-cell {
+    padding: 14px;
+    font-size: 14px;
+    line-height: 1.65;
+    vertical-align: top;
+    position: relative;
+  }
+  .col-cell:nth-child(1) { background: var(--col1); }
+  .col-cell:nth-child(2) { background: var(--col2); }
+  .col-cell:nth-child(3) { background: var(--col3); font-size: 12px; color: var(--text-dim); font-style: italic; }
+
+  /* Play button on translation cell */
+  .play-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1px solid var(--accent2);
+    background: transparent;
+    color: var(--accent2);
+    font-size: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+  }
+  .play-btn:hover { opacity: 1; }
+
+  /* Skeleton loading row */
+  .phrase-row.loading .col-cell {
+    color: transparent;
+    position: relative;
+    overflow: hidden;
+  }
+  .phrase-row.loading .col-cell::after {
+    content: '';
+    position: absolute;
+    inset: 14px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--border) 25%, var(--surface) 50%, var(--border) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+  }
+  @keyframes shimmer {
+    from { background-position: 200% 0; }
+    to   { background-position: -200% 0; }
+  }
+
+  /* Timestamp */
+  .ts {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--text-dim);
+    opacity: 0.5;
+    margin-top: 6px;
+  }
+
+  /* Scrollbar */
+  .phrases::-webkit-scrollbar { width: 4px; }
+  .phrases::-webkit-scrollbar-track { background: var(--bg); }
+  .phrases::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">пере<span>вод</span>чик</div>
+  <div class="mode-switch">
+    <button class="mode-btn active" id="btnWhisper" onclick="setMode('whisper')">Whisper</button>
+    <button class="mode-btn" id="btnRealtime" onclick="setMode('realtime')">Realtime</button>
+  </div>
+</header>
+
+<!-- CONTROLS -->
+<div class="controls">
+  <div class="mic-row">
+    <button class="rec-btn" id="recBtn" onclick="toggleRecording()">
+      <span class="rec-icon" id="recIcon">🎙️</span>
+    </button>
+    <div class="meter-wrap">
+      <div class="meter-label">
+        <span>Уровень микрофона</span>
+        <span id="meterPct">0%</span>
+      </div>
+      <div class="meter-bar"><div class="meter-fill" id="meterFill"></div></div>
+    </div>
+  </div>
+
+  <div class="gain-row">
+    <span>🔈</span>
+    <input type="range" id="gainSlider" min="0" max="300" value="100"
+           oninput="setGain(this.value)">
+    <span>🔊</span>
+    <span class="gain-val" id="gainVal">100%</span>
+  </div>
+
+  <div class="noise-row">
+    <span>Шумоподавление</span>
+    <button class="toggle on" id="noiseToggle" onclick="toggleNoise()"></button>
+  </div>
+</div>
+
+<!-- STATUS -->
+<div class="status-bar">
+  <div class="status-dot" id="statusDot"></div>
+  <span id="statusText">Готов к работе. Нажмите 🎙️ чтобы начать.</span>
+</div>
+
+<!-- TABLE HEADER -->
+<div class="table-header">
+  <div class="col-head">🗣 Оригинал</div>
+  <div class="col-head">🇷🇺 Перевод</div>
+  <div class="col-head">💡 Разбор</div>
+</div>
+
+<!-- PHRASES -->
+<div class="phrases" id="phrases">
+  <div class="empty-state" id="emptyState">
+    <div class="big">🎧</div>
+    <div>Включите микрофон и начните слушать выступление</div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════
+//  STATE
+// ══════════════════════════════════
+let mode = 'whisper';
+let isRecording = false;
+let noiseOn = true;
+let gainValue = 1.0;
+
+// Audio pipeline
+let audioCtx, gainNode, analyserNode, sourceNode, stream;
+let mediaRecorder, chunks = [];
+
+// Realtime WebSocket
+let ws = null;
+let realtimeTranscript = '';
+let reconnectTimer = null;
+
+// Wake lock
+let wakeLock = null;
+
+// ══════════════════════════════════
+//  UI HELPERS
+// ══════════════════════════════════
+function setStatus(msg, state = '') {
+  document.getElementById('statusText').textContent = msg;
+  const dot = document.getElementById('statusDot');
+  dot.className = 'status-dot' + (state ? ' ' + state : '');
+}
+
+function setMode(m) {
+  mode = m;
+  document.getElementById('btnWhisper').classList.toggle('active', m === 'whisper');
+  document.getElementById('btnRealtime').classList.toggle('active', m === 'realtime');
+  if (isRecording) stopRecording();
+  setStatus(`Режим: ${m === 'whisper' ? 'Whisper (~2–3 сек задержка)' : 'Realtime (~500мс задержка)'}`);
+}
+
+function now() {
+  return new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+}
+
+// ══════════════════════════════════
+//  PHRASE ROWS
+// ══════════════════════════════════
+function addLoadingRow() {
+  const el = document.getElementById('emptyState');
+  if (el) el.remove();
+
+  const row = document.createElement('div');
+  row.className = 'phrase-row loading';
+  row.innerHTML = `
+    <div class="col-cell">…</div>
+    <div class="col-cell">…</div>
+    <div class="col-cell">…</div>`;
+  document.getElementById('phrases').prepend(row);
+  return row;
+}
+
+function fillRow(row, transcript, translation, explanation) {
+  row.classList.remove('loading');
+  row.innerHTML = `
+    <div class="col-cell">${transcript}<div class="ts">${now()}</div></div>
+    <div class="col-cell">
+      ${translation}
+      <button class="play-btn" onclick="speakText(${JSON.stringify(translation)}, this)" title="Озвучить">▶</button>
+    </div>
+    <div class="col-cell">${explanation}</div>`;
+}
+
+// ══════════════════════════════════
+//  TTS
+// ══════════════════════════════════
+async function speakText(text, btn) {
+  try {
+    if (btn) btn.textContent = '⏳';
+    const res = await fetch('/api/speak', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text })
+    });
+    if (!res.ok) throw new Error('TTS error');
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const audio = new Audio(url);
+    audio.play();
+    audio.onended = () => { if (btn) btn.textContent = '▶'; };
+  } catch (e) {
+    if (btn) btn.textContent = '▶';
+    setStatus('Ошибка озвучки: ' + e.message, 'error');
+  }
+}
+
+// ══════════════════════════════════
+//  MIC LEVEL METER
+// ══════════════════════════════════
+let meterFrame;
+function startMeter() {
+  const buf = new Uint8Array(analyserNode.frequencyBinCount);
+  function tick() {
+    analyserNode.getByteFrequencyData(buf);
+    const avg = buf.reduce((a, b) => a + b, 0) / buf.length;
+    const pct = Math.min(100, (avg / 128) * 100 * gainValue);
+    document.getElementById('meterFill').style.width = pct + '%';
+    document.getElementById('meterPct').textContent = Math.round(pct) + '%';
+    meterFrame = requestAnimationFrame(tick);
+  }
+  tick();
+}
+function stopMeter() {
+  cancelAnimationFrame(meterFrame);
+  document.getElementById('meterFill').style.width = '0%';
+  document.getElementById('meterPct').textContent = '0%';
+}
+
+// ══════════════════════════════════
+//  GAIN & NOISE
+// ══════════════════════════════════
+function setGain(val) {
+  gainValue = val / 100;
+  document.getElementById('gainVal').textContent = val + '%';
+  if (gainNode) gainNode.gain.value = gainValue;
+}
+
+function toggleNoise() {
+  noiseOn = !noiseOn;
+  document.getElementById('noiseToggle').classList.toggle('on', noiseOn);
+  if (isRecording) {
+    stopRecording();
+    startRecording();
+  }
+}
+
+// ══════════════════════════════════
+//  WAKE LOCK
+// ══════════════════════════════════
+async function acquireWakeLock() {
+  try {
+    if ('wakeLock' in navigator) {
+      wakeLock = await navigator.wakeLock.request('screen');
+    }
+  } catch (_) {}
+}
+function releaseWakeLock() {
+  if (wakeLock) { wakeLock.release(); wakeLock = null; }
+}
+
+// ══════════════════════════════════
+//  RECORDING TOGGLE
+// ══════════════════════════════════
+async function toggleRecording() {
+  if (isRecording) {
+    stopRecording();
+  } else {
+    await startRecording();
+  }
+}
+
+async function startRecording() {
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: noiseOn,
+        autoGainControl: false,
+      }
+    });
+
+    // Audio graph: source → gain → analyser → destination
+    audioCtx = new AudioContext({ sampleRate: 24000 });
+    sourceNode = audioCtx.createMediaStreamSource(stream);
+    gainNode = audioCtx.createGain();
+    gainNode.gain.value = gainValue;
+    analyserNode = audioCtx.createAnalyser();
+    analyserNode.fftSize = 256;
+
+    sourceNode.connect(gainNode);
+    gainNode.connect(analyserNode);
+
+    isRecording = true;
+    document.getElementById('recBtn').classList.add('recording');
+    document.getElementById('recIcon').textContent = '⏹';
+    startMeter();
+    acquireWakeLock();
+
+    if (mode === 'whisper') {
+      startWhisperRecording();
+    } else {
+      startRealtimeSession();
+    }
+  } catch (e) {
+    setStatus('Ошибка доступа к микрофону: ' + e.message, 'error');
+  }
+}
+
+function stopRecording() {
+  isRecording = false;
+  document.getElementById('recBtn').classList.remove('recording');
+  document.getElementById('recIcon').textContent = '🎙️';
+  stopMeter();
+  releaseWakeLock();
+
+  if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+  if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+  if (audioCtx) { audioCtx.close(); audioCtx = null; }
+  if (ws) { ws.close(); ws = null; }
+  if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }
+
+  setStatus('Остановлено.');
+}
+
+// ══════════════════════════════════
+//  WHISPER MODE
+// ══════════════════════════════════
+function startWhisperRecording() {
+  // Подключаем gainNode к destination для записи
+  const dest = audioCtx.createMediaStreamDestination();
+  gainNode.connect(dest);
+
+  chunks = [];
+  mediaRecorder = new MediaRecorder(dest.stream, { mimeType: 'audio/webm' });
+
+  mediaRecorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+
+  mediaRecorder.onstop = async () => {
+    if (!chunks.length) return;
+    const blob = new Blob(chunks, { type: 'audio/webm' });
+    chunks = [];
+    await sendToWhisper(blob);
+    // Продолжаем запись по кругу
+    if (isRecording) {
+      mediaRecorder.start();
+      setTimeout(() => { if (mediaRecorder.state === 'recording') mediaRecorder.stop(); }, 8000);
+    }
+  };
+
+  mediaRecorder.start();
+  setTimeout(() => { if (mediaRecorder.state === 'recording') mediaRecorder.stop(); }, 8000);
+  setStatus('Запись... (Whisper, фразы по ~8 сек)', 'active');
+}
+
+async function sendToWhisper(blob) {
+  const row = addLoadingRow();
+  setStatus('Обрабатываю фразу...', 'active');
+  try {
+    const fd = new FormData();
+    fd.append('audio', blob, 'audio.webm');
+    const res = await fetch('/api/translate', { method: 'POST', body: fd });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    if (!data.transcript) { row.remove(); setStatus('Речь не обнаружена', ''); return; }
+
+    fillRow(row, data.transcript, data.translation, data.explanation);
+    speakText(data.translation, null);
+    setStatus('Готово. Продолжаю слушать...', 'active');
+  } catch (e) {
+    row.remove();
+    setStatus('Ошибка: ' + e.message, 'error');
+  }
+}
+
+// ══════════════════════════════════
+//  REALTIME MODE
+// ══════════════════════════════════
+async function startRealtimeSession() {
+  setStatus('Получаю токен...', '');
+  try {
+    const res = await fetch('/api/token', { method: 'POST' });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    connectRealtime(data.client_secret.value);
+  } catch (e) {
+    setStatus('Ошибка токена: ' + e.message, 'error');
+  }
+}
+
+function connectRealtime(token) {
+  const url = `wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview`;
+  ws = new WebSocket(url, ['realtime', `openai-insecure-api-key.${token}`, 'openai-beta.realtime-v1']);
+
+  ws.onopen = () => {
+    setStatus('Realtime подключён. Говорите!', 'active');
+    ws.send(JSON.stringify({
+      type: 'session.update',
+      session: {
+        modalities: ['text'],
+        input_audio_format: 'pcm16',
+        input_audio_transcription: { model: 'whisper-1' },
+        turn_detection: {
+          type: 'server_vad',
+          threshold: 0.5,
+          prefix_padding_ms: 300,
+          silence_duration_ms: 700
+        }
+      }
+    }));
+    streamMicToWS();
+  };
+
+  ws.onmessage = async (e) => {
+    const ev = JSON.parse(e.data);
+    if (ev.type === 'input_audio_buffer.speech_started') {
+      setStatus('🎙️ Слушаю...', 'active');
+    }
+    if (ev.type === 'conversation.item.input_audio_transcription.completed') {
+      const transcript = ev.transcript?.trim();
+      if (!transcript) return;
+      const row = addLoadingRow();
+      setStatus('Перевожу...', 'active');
+      try {
+        const res = await fetch('/api/translate', {
+          method: 'POST',
+          body: (() => { const fd = new FormData(); /* пустой аудио, передаём текст */
+            // Используем текстовый endpoint для Realtime (перевод без транскрипции)
+            return JSON.stringify({ text: transcript });
+          })(),
+          headers: { 'Content-Type': 'application/json' }
+        });
+        // Для realtime — отдельный вызов ChatGPT
+        const chatRes = await fetch('/api/translate-text', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: transcript })
+        });
+        const data = await chatRes.json();
+        fillRow(row, transcript, data.translation, data.explanation);
+        speakText(data.translation, null);
+        setStatus('Готово. Слушаю...', 'active');
+      } catch (err) {
+        row.remove();
+        setStatus('Ошибка перевода: ' + err.message, 'error');
+      }
+    }
+    if (ev.type === 'error') {
+      setStatus('Ошибка Realtime: ' + ev.error?.message, 'error');
+    }
+  };
+
+  ws.onclose = () => {
+    if (isRecording) {
+      setStatus('Соединение прервано. Переподключение...', '');
+      reconnectTimer = setTimeout(() => startRealtimeSession(), 3000);
+    }
+  };
+}
+
+function streamMicToWS() {
+  const dest = audioCtx.createMediaStreamDestination();
+  gainNode.connect(dest);
+
+  const processor = audioCtx.createScriptProcessor(4096, 1, 1);
+  analyserNode.connect(processor);
+  processor.connect(audioCtx.destination);
+
+  processor.onaudioprocess = (e) => {
+    if (!ws || ws.readyState !== WebSocket.OPEN) return;
+    const input = e.inputBuffer.getChannelData(0);
+    const pcm = new Int16Array(input.length);
+    for (let i = 0; i < input.length; i++) {
+      pcm[i] = Math.max(-32768, Math.min(32767, input[i] * 32768));
+    }
+    const b64 = btoa(String.fromCharCode(...new Uint8Array(pcm.buffer)));
+    ws.send(JSON.stringify({ type: 'input_audio_buffer.append', audio: b64 }));
+  };
+}
+</script>
+</body>
+</html>
