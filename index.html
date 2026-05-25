@@ -714,8 +714,12 @@ async function startRealtimeSession() {
 }
 
 function connectRealtime(token) {
-  const url = `wss://api.openai.com/v1/realtime?model=gpt-realtime`;
-  ws = new WebSocket(url + `&authorization=Bearer%20${token}`, ['realtime']);
+  const url = `wss://api.openai.com/v1/realtime?model=gpt-realtime-2025-08-28`;
+  ws = new WebSocket(url, [
+  'realtime',
+  `openai-insecure-api-key.${token}`,
+  'openai-beta.realtime-v1'
+  ]);
   ws.onopen = () => {
     setStatus('Realtime подключён. Говорите!', 'active');
     ws.send(JSON.stringify({
