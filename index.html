@@ -588,15 +588,8 @@ async function connectWebRTC(token) {
     if (ev.type === 'input_audio_buffer.speech_started') {
       setStatus('🎙️ Слушаю...', 'active');
     }
-    if (ev.type === 'conversation.item.input_audio_transcription.completed' ||
-        ev.type === 'conversation.item.done') {
-      const item = ev.item;
-      const transcript = (
-        ev.transcript ||
-        item?.content?.[0]?.transcript ||
-        item?.content?.[0]?.text ||
-        item?.transcript
-      )?.trim();
+    if (ev.type === 'conversation.item.input_audio_transcription.completed') {
+      const transcript = ev.transcript?.trim();
       if (!transcript) {
         setStatus('Нет текста: ' + JSON.stringify(item?.content), '');
         return;
