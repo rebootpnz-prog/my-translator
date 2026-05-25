@@ -207,7 +207,7 @@
   .empty-state .big { font-size: 36px; opacity: 0.4; }
 
   .phrase-row {
-    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    display: grid; grid-template-columns: 1fr 1fr;
     gap: 1px; background: var(--border);
     border-bottom: 1px solid var(--border);
     animation: rowIn 0.35s ease;
@@ -301,7 +301,6 @@
 <div class="table-header">
   <div class="col-head">🗣 Оригинал</div>
   <div class="col-head">🇷🇺 Перевод</div>
-  <div class="col-head">💡 Разбор</div>
 </div>
 
 <div class="phrases" id="phrases">
@@ -372,8 +371,7 @@ function fillRow(row, transcript, translation, explanation) {
     <div class="col-cell">
       ${translation}
       <button class="play-btn" onclick="speakText(${JSON.stringify(translation)}, this)">▶</button>
-    </div>
-    <div class="col-cell">${explanation}</div>`;
+    </div>`;
 }
 
 // ══════════════════════════════════
