@@ -582,7 +582,10 @@ async function connectWebRTC(token) {
     dc.send(JSON.stringify({
   type: 'session.update',
   session: {
-    type: 'transcription'
+    type: 'transcription',
+    input_audio_transcription: {
+      model: 'gpt-4o-transcribe'
+    }
   }
   }));
   };
