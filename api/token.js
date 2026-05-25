@@ -13,14 +13,27 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        session: {
-          type: 'realtime',
-          model: 'gpt-realtime',
-          audio: { output: { voice: 'ash' } }
-        }
-      }),
+  session: {
+    type: 'realtime',
+    model: 'gpt-realtime',
+    audio: { 
+      output: { voice: 'ash' },
+      input_transcription: { model: 'whisper-1' }
+    }
+  }
+    }),
     });
-    const data = await response.json();
+    body: JSON.stringify({
+  session: {
+    type: 'realtime',
+    model: 'gpt-realtime',
+    audio: { 
+      output: { voice: 'ash' },
+      input_transcription: { model: 'whisper-1' }
+    }
+  }
+}),
+const data = await response.json();
     if (!response.ok) return res.status(response.status).json({ error: JSON.stringify(data) });
     res.status(200).json(data);
   } catch (err) {
