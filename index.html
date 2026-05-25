@@ -579,6 +579,17 @@ async function connectWebRTC(token) {
     setStatus('✅ Realtime подключён. Говорите!', 'active');
 
     // Настраиваем сессию
+    dc.send(JSON.stringify({
+     type: 'session.update',
+      session: {
+       type: 'realtime',
+       turn_detection: {
+         type: 'server_vad',
+         threshold: 0.5,
+         create_response: false
+       }
+      }
+     }));
   };
 
   dc.onmessage = async (e) => {
@@ -631,7 +642,7 @@ async function connectWebRTC(token) {
   await pc.setLocalDescription(offer);
 
   const sdpRes = await fetch(
-    `https://api.openai.com/v1/realtime/calls?intent=transcription`,
+    `https://api.openai.com/v1/realtime/calls?model=gpt-realtime-1.5`,
       {
       method: 'POST',
       headers: {
