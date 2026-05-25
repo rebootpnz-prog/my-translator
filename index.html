@@ -33,12 +33,14 @@
   .meter-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-dim); display: flex; justify-content: space-between; }
   .meter-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
   .meter-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 3px; transition: width 0.1s; }
+
   .gain-row { display: flex; align-items: center; gap: 10px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-dim); }
   .gain-row input[type=range] { flex: 1; -webkit-appearance: none; height: 4px; border-radius: 2px; background: var(--border); outline: none; }
   .gain-row input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--accent); cursor: pointer; }
-  .gain-val { width: 34px; text-align: right; color: var(--text); }
-  .noise-row { display: flex; align-items: center; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-dim); }
-  .toggle { width: 36px; height: 20px; background: var(--border); border-radius: 10px; cursor: pointer; position: relative; transition: background 0.2s; border: none; }
+  .gain-val { width: 42px; text-align: right; color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-dim); }
+  .toggle { width: 36px; height: 20px; background: var(--border); border-radius: 10px; cursor: pointer; position: relative; transition: background 0.2s; border: none; flex-shrink: 0; }
   .toggle.on { background: var(--accent); }
   .toggle::after { content: ''; position: absolute; width: 14px; height: 14px; background: #fff; border-radius: 50%; top: 3px; left: 3px; transition: left 0.2s; }
   .toggle.on::after { left: 19px; }
@@ -75,8 +77,8 @@
 <header>
   <div class="logo">пере<span>вод</span>чик</div>
   <div class="mode-switch">
-    <button class="mode-btn active" id="btnWhisper" onclick="setMode('whisper')">Whisper</button>
-    <button class="mode-btn" id="btnRealtime" onclick="setMode('realtime')">Realtime</button>
+    <button class="mode-btn" id="btnWhisper" onclick="setMode('whisper')">Whisper</button>
+    <button class="mode-btn active" id="btnRealtime" onclick="setMode('realtime')">Realtime</button>
   </div>
 </header>
 
@@ -90,15 +92,28 @@
       <div class="meter-bar"><div class="meter-fill" id="meterFill"></div></div>
     </div>
   </div>
+
   <div class="gain-row">
     <span>🔈</span>
     <input type="range" id="gainSlider" min="0" max="300" value="100" oninput="setGain(this.value)">
     <span>🔊</span>
     <span class="gain-val" id="gainVal">100%</span>
   </div>
-  <div class="noise-row">
+
+  <div class="toggle-row">
     <span>Шумоподавление</span>
     <button class="toggle on" id="noiseToggle" onclick="toggleNoise()"></button>
+  </div>
+
+  <div class="toggle-row">
+    <span>Пауза для перевода</span>
+    <span class="gain-val" id="silenceVal">700мс</span>
+  </div>
+  <div class="gain-row">
+    <span>⚡</span>
+    <input type="range" id="silenceSlider" min="300" max="2000" value="700" step="100"
+           oninput="setSilence(this.value)">
+    <span>🐢</span>
   </div>
 </div>
 
@@ -120,10 +135,11 @@
 </div>
 
 <script>
-let mode = 'whisper';
+let mode = 'realtime';
 let isRecording = false;
 let noiseOn = true;
 let gainValue = 1.0;
+let silenceDuration = 700;
 let audioCtx, gainNode, analyserNode, sourceNode, stream;
 let mediaRecorder, chunks = [];
 let pc = null, dc = null;
@@ -143,6 +159,11 @@ function setMode(m) {
   document.getElementById('btnRealtime').classList.toggle('active', m === 'realtime');
   if (isRecording) stopRecording();
   setStatus(`Режим: ${m === 'whisper' ? 'Whisper (~2–3 сек)' : 'Realtime WebRTC (~500мс)'}`);
+}
+
+function setSilence(val) {
+  silenceDuration = parseInt(val);
+  document.getElementById('silenceVal').textContent = val + 'мс';
 }
 
 function now() {
@@ -314,7 +335,8 @@ async function connectWebRTC(token) {
       type: 'session.update',
       session: {
         type: 'realtime',
-        instructions: 'You are a live interpreter. Your ONLY job is to translate English speech to Russian. NEVER respond in English. NEVER greet or ask questions. Just translate. Format: ORIGINAL: [english] | TRANSLATION: [russian]'
+        instructions: 'You are a live interpreter. Your ONLY job is to translate English speech to Russian. NEVER respond in English. NEVER greet or ask questions. Just translate. Format: ORIGINAL: [english] | TRANSLATION: [russian]',
+        silence_duration_ms: silenceDuration
       }
     }));
   };
@@ -351,7 +373,7 @@ async function connectWebRTC(token) {
     }
 
     if (ev.type === 'error') {
-      setStatus('Ошибка Realtime: ' + ev.error?.message, 'error');
+      setStatus('Ошибка: ' + ev.error?.message, 'error');
     }
   };
 
