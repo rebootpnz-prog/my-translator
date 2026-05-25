@@ -581,7 +581,7 @@ async function connectWebRTC(token) {
      type: 'session.update',
      session: {
       type: 'realtime',
-      instructions: 'You are a translator. When you hear English speech, respond ONLY in this exact format: ORIGINAL: [english text] | TRANSLATION: [russian translation]. Nothing else.'
+      instructions: 'You are a live interpreter. Your ONLY job is to translate English speech to Russian. NEVER respond in English. NEVER greet or ask questions. Just translate. Format: ORIGINAL: [english] | TRANSLATION: [russian]'
      }
     }));
   };
