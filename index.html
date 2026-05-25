@@ -589,12 +589,15 @@ async function connectWebRTC(token) {
 
   dc.onmessage = async (e) => {
     const ev = JSON.parse(e.data);
+      setStatus('Событие: ' + ev.type, '');
 
     if (ev.type === 'input_audio_buffer.speech_started') {
       setStatus('🎙️ Слушаю...', 'active');
     }
 
-    if (ev.type === 'conversation.item.input_audio_transcription.completed') {
+    if (ev.type === 'conversation.item.input_audio_transcription.completed' ||
+    ev.type === 'conversation.item.added' ||
+    ev.type === 'transcription.session.update') {
       const transcript = ev.transcript?.trim();
       if (!transcript) return;
       const row = addLoadingRow();
