@@ -579,13 +579,6 @@ async function connectWebRTC(token) {
     setStatus('✅ Realtime подключён. Говорите!', 'active');
 
     // Настраиваем сессию
-    dc.send(JSON.stringify({
-     type: 'session.update',
-     session: {
-      type: 'realtime',
-      create_response: false
-     }
-    }));
   };
 
   dc.onmessage = async (e) => {
