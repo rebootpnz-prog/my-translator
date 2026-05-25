@@ -701,7 +701,14 @@ async function startRealtimeSession() {
     const res = await fetch('/api/token', { method: 'POST' });
     const data = await res.json();
     if (data.error) throw new Error(data.error);
-    const token = data.client_secret?.value || data.client_secret;
+    const raw = JSON.stringify(data).substring(0, 150);
+    setStatus('Ответ: ' + raw, '');
+    const token = data.client_secret?.value 
+      || data.client_secret 
+      || data.ephemeral_key
+      || data.key
+      || data.token;
+    if (!token) throw new Error('Нет токена: ' + raw);
     connectRealtime(token);
   } catch (e) {
     setStatus('Ошибка токена: ' + e.message, 'error');
