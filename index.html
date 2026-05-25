@@ -594,7 +594,7 @@ async function connectWebRTC(token) {
     if (ev.type === 'input_audio_buffer.speech_started') {
       setStatus('🎙️ Слушаю...', 'active');
     }
-
+setStatus('Данные: ' + JSON.stringify(ev).substring(0, 200), '');
     if (ev.type === 'conversation.item.done') {
       const transcript = (
   ev.item?.content?.[0]?.transcript ||
