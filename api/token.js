@@ -15,9 +15,7 @@ export default async function handler(req, res) {
         'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        voice: 'ash'
-      }),
+      body: JSON.stringify({}),
     });
 
     const data = await response.json();
