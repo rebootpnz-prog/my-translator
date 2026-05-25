@@ -9,12 +9,11 @@ export default async function handler(req, res) {
   }
 
   try {
-    const response = await fetch('https://api.openai.com/v1/realtime/sessions', {
+    const response = await fetch('https://api.openai.com/v1/realtime/client_secrets', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-        'OpenAI-Beta': 'realtime=v1'
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
         model: 'gpt-realtime-2025-08-28',
