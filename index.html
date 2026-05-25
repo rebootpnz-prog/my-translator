@@ -595,13 +595,14 @@ async function connectWebRTC(token) {
       setStatus('🎙️ Слушаю...', 'active');
     }
 setStatus('Данные: ' + JSON.stringify(ev).substring(0, 200), '');
-    if (ev.type === 'conversation.item.done') {
+    if (ev.type === 'conversation.item.input_audio_transcription.completed' ||
+    ev.type === 'conversation.item.done') {
       const item = ev.item;
 const transcript = (
+  ev.transcript ||
   item?.content?.[0]?.transcript ||
   item?.content?.[0]?.text ||
-  item?.transcript ||
-  ev.transcript
+  item?.transcript
 )?.trim();
 if (!transcript) {
   setStatus('Нет текста: ' + JSON.stringify(item?.content), '');
