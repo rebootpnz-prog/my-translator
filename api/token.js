@@ -18,7 +18,6 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: 'gpt-realtime',
         voice: 'ash',
-        modalities: ['text'],
         input_audio_transcription: { model: 'whisper-1' },
         turn_detection: {
           type: 'server_vad',
@@ -30,9 +29,10 @@ export default async function handler(req, res) {
     });
 
     const data = await response.json();
+
     if (!response.ok) {
       return res.status(response.status).json({ 
-        error: data.error?.message || 'Failed' 
+        error: JSON.stringify(data)
       });
     }
 
