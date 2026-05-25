@@ -595,10 +595,13 @@ async function connectWebRTC(token) {
       setStatus('🎙️ Слушаю...', 'active');
     }
 
-    if (ev.type === 'conversation.item.input_audio_transcription.completed' ||
-    ev.type === 'conversation.item.done' ||
-    ev.type === 'response.output_text.done') {
-      const transcript = (ev.transcript || ev.text || ev.item?.content?.[0]?.transcript)?.trim();
+    if (ev.type === 'conversation.item.done') {
+      const transcript = (
+  ev.item?.content?.[0]?.transcript ||
+  ev.item?.content?.[0]?.text ||
+  ev.transcript ||
+  ev.text
+)?.trim();
       if (!transcript) return;
       const row = addLoadingRow();
       setStatus('Перевожу...', 'active');
