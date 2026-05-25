@@ -13,10 +13,12 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        session: {
-          type: 'realtime'
-        }
-      }),
+  session: {
+    type: 'realtime',
+    instructions: 'You are a transcription-only assistant. Never respond to the user. Only transcribe what you hear. Do not generate any responses.'
+  }
+}),
+
     });
     const data = await response.json();
     if (!response.ok) return res.status(response.status).json({ error: JSON.stringify(data) });
