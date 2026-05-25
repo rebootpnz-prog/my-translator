@@ -14,17 +14,11 @@ export default async function handler(req, res) {
       headers: {
         'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
+        'OpenAI-Beta': 'realtime=v1'
       },
       body: JSON.stringify({
-        model: 'gpt-realtime',
-        voice: 'ash',
-        input_audio_transcription: { model: 'whisper-1' },
-        turn_detection: {
-          type: 'server_vad',
-          threshold: 0.5,
-          prefix_padding_ms: 300,
-          silence_duration_ms: 700
-        }
+        model: 'gpt-realtime-2025-08-28',
+        voice: 'ash'
       }),
     });
 
