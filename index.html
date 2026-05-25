@@ -703,11 +703,9 @@ async function startRealtimeSession() {
     if (data.error) throw new Error(data.error);
     const raw = JSON.stringify(data).substring(0, 150);
     setStatus('Ответ: ' + raw, '');
-    const token = data.client_secret?.value 
-      || data.client_secret 
-      || data.ephemeral_key
-      || data.key
-      || data.token;
+    const token = data.value
+    || data.client_secret?.value 
+    || data.client_secret;
     if (!token) throw new Error('Нет токена: ' + raw);
     connectRealtime(token);
   } catch (e) {
