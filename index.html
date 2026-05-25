@@ -701,7 +701,8 @@ async function startRealtimeSession() {
     const res = await fetch('/api/token', { method: 'POST' });
     const data = await res.json();
     if (data.error) throw new Error(data.error);
-    connectRealtime(data.client_secret.value);
+    const token = data.client_secret?.value || data.client_secret;
+    connectRealtime(token);
   } catch (e) {
     setStatus('Ошибка токена: ' + e.message, 'error');
   }
