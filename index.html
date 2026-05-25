@@ -596,9 +596,9 @@ async function connectWebRTC(token) {
     }
 
     if (ev.type === 'conversation.item.input_audio_transcription.completed' ||
-    ev.type === 'conversation.item.added' ||
-    ev.type === 'transcription.session.update') {
-      const transcript = ev.transcript?.trim();
+    ev.type === 'conversation.item.done' ||
+    ev.type === 'response.output_text.done') {
+      const transcript = (ev.transcript || ev.text || ev.item?.content?.[0]?.transcript)?.trim();
       if (!transcript) return;
       const row = addLoadingRow();
       setStatus('Перевожу...', 'active');
