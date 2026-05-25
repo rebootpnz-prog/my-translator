@@ -13,7 +13,10 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        session: { type: 'realtime' }
+       session: {
+        type: 'realtime',
+        instructions: 'You are a translator. When you hear English speech, respond ONLY with the Russian translation. No explanations, no greetings, just the translation.'
+       }
       }),
     });
     const data = await response.json();
