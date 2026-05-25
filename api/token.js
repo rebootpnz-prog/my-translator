@@ -6,24 +6,21 @@ export default async function handler(req, res) {
   if (!apiKey) return res.status(500).json({ error: 'No API key' });
 
   try {
-    const response = await fetch('https://api.openai.com/v1/realtime/client_secrets', {
+    const response = await fetch('https://api.openai.com/v1/realtime/transcription_sessions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        session: {
-          type: 'transcription',
-          transcription: {
-            model: 'gpt-4o-transcribe'
-          },
-          turn_detection: {
-            type: 'server_vad',
-            threshold: 0.5,
-            prefix_padding_ms: 300,
-            silence_duration_ms: 700
-          }
+        input_audio_transcription: {
+          model: 'gpt-4o-transcribe'
+        },
+        turn_detection: {
+          type: 'server_vad',
+          threshold: 0.5,
+          prefix_padding_ms: 300,
+          silence_duration_ms: 700
         }
       }),
     });
