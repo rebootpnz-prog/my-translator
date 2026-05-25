@@ -579,15 +579,6 @@ async function connectWebRTC(token) {
     setStatus('✅ Realtime подключён. Говорите!', 'active');
 
     // Настраиваем сессию
-    dc.send(JSON.stringify({
-  type: 'session.update',
-  session: {
-    type: 'transcription',
-    input_audio_transcription: {
-      model: 'gpt-4o-transcribe'
-    }
-  }
-  }));
   };
 
   dc.onmessage = async (e) => {
@@ -597,20 +588,19 @@ async function connectWebRTC(token) {
     if (ev.type === 'input_audio_buffer.speech_started') {
       setStatus('🎙️ Слушаю...', 'active');
     }
-setStatus('Данные: ' + JSON.stringify(ev).substring(0, 200), '');
     if (ev.type === 'conversation.item.input_audio_transcription.completed' ||
-    ev.type === 'conversation.item.done') {
+        ev.type === 'conversation.item.done') {
       const item = ev.item;
-const transcript = (
-  ev.transcript ||
-  item?.content?.[0]?.transcript ||
-  item?.content?.[0]?.text ||
-  item?.transcript
-)?.trim();
-if (!transcript) {
-  setStatus('Нет текста: ' + JSON.stringify(item?.content), '');
-  return;
-}
+      const transcript = (
+        ev.transcript ||
+        item?.content?.[0]?.transcript ||
+        item?.content?.[0]?.text ||
+        item?.transcript
+      )?.trim();
+      if (!transcript) {
+        setStatus('Нет текста: ' + JSON.stringify(item?.content), '');
+        return;
+      }
       if (!transcript) return;
       const row = addLoadingRow();
       setStatus('Перевожу...', 'active');
