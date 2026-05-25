@@ -632,7 +632,7 @@ async function connectWebRTC(token) {
 
   const sdpRes = await fetch(
     `https://api.openai.com/v1/realtime/calls?intent=transcription`,
-    {
+      {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
