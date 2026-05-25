@@ -596,12 +596,17 @@ async function connectWebRTC(token) {
     }
 setStatus('Данные: ' + JSON.stringify(ev).substring(0, 200), '');
     if (ev.type === 'conversation.item.done') {
-      const transcript = (
-  ev.item?.content?.[0]?.transcript ||
-  ev.item?.content?.[0]?.text ||
-  ev.transcript ||
-  ev.text
+      const item = ev.item;
+const transcript = (
+  item?.content?.[0]?.transcript ||
+  item?.content?.[0]?.text ||
+  item?.transcript ||
+  ev.transcript
 )?.trim();
+if (!transcript) {
+  setStatus('Нет текста: ' + JSON.stringify(item?.content), '');
+  return;
+}
       if (!transcript) return;
       const row = addLoadingRow();
       setStatus('Перевожу...', 'active');
