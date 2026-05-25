@@ -17,7 +17,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: 'gpt-4o-realtime-preview',
-        voice: 'onyx', // мужской голос
+        voice: 'ash', // мужской голос
         modalities: ['text'],
         input_audio_transcription: { model: 'whisper-1' },
         turn_detection: {
