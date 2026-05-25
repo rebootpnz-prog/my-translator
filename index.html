@@ -639,7 +639,7 @@ async function connectWebRTC(token) {
   await pc.setLocalDescription(offer);
 
   const sdpRes = await fetch(
-    `https://api.openai.com/v1/realtime?model=gpt-realtime-2025-08-28`,
+    `https://api.openai.com/v1/realtime/calls`,
     {
       method: 'POST',
       headers: {
