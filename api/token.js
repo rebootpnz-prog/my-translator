@@ -5,6 +5,8 @@ export default async function handler(req, res) {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) return res.status(500).json({ error: 'No API key' });
 
+  const { silence_duration_ms = 700 } = req.body || {};
+
   try {
     const response = await fetch('https://api.openai.com/v1/realtime/client_secrets', {
       method: 'POST',
@@ -18,7 +20,7 @@ export default async function handler(req, res) {
     });
     const data = await response.json();
     if (!response.ok) return res.status(response.status).json({ error: JSON.stringify(data) });
-    res.status(200).json(data);
+    res.status(200).json({ ...data, silence_duration_ms });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
