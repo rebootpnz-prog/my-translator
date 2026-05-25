@@ -13,28 +13,7 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-       session: {
-        type: 'realtime',
-        if (ev.type === 'response.done') {
-          const full = accumulatedTranscript.trim();
-          accumulatedTranscript = '';
-          if (!full) return;
-  
-          let original = '—';
-          let translation = full;
-  
-          if (full.includes('ORIGINAL:') && full.includes('| TRANSLATION:')) {
-           const parts = full.split('| TRANSLATION:');
-           original = parts[0].replace('ORIGINAL:', '').trim();
-           translation = parts[1]?.trim() || full;
-          }
-  
-          const row = addLoadingRow();
-          fillRow(row, original, translation, '');
-          speakText(translation, null);
-          setStatus('Готово. Слушаю...', 'active');
-        }
-       }
+        session: { type: 'realtime' }
       }),
     });
     const data = await response.json();
