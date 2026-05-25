@@ -17,7 +17,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: 'gpt-4o-realtime-preview-2025-06-03',
-        voice: 'ash', // мужской голос
+        voice: 'ash',
         modalities: ['text'],
         input_audio_transcription: { model: 'whisper-1' },
         turn_detection: {
@@ -31,7 +31,9 @@ export default async function handler(req, res) {
 
     const data = await response.json();
     if (!response.ok) {
-      return res.status(response.status).json({ error: data.error?.message || 'Failed to create session' });
+      return res.status(response.status).json({ 
+        error: data.error?.message || 'Failed' 
+      });
     }
 
     res.status(200).json({ client_secret: data.client_secret });
