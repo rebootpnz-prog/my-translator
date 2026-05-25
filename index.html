@@ -4,258 +4,70 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Переводчик</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;1,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@300;400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0d0f12;
-    --surface: #13161b;
-    --border: #1e2330;
-    --accent: #4a7fa5;
-    --accent2: #c47c3e;
-    --accent3: #5a8f6a;
-    --text: #d4d8e2;
-    --text-dim: #6b7280;
-    --text-bright: #eef0f5;
-    --col1: rgba(74,127,165,0.06);
-    --col2: rgba(196,124,62,0.06);
-    --col3: rgba(90,143,106,0.06);
+    --bg: #0d0f12; --surface: #13161b; --border: #1e2330;
+    --accent: #4a7fa5; --accent2: #c47c3e;
+    --text: #d4d8e2; --text-dim: #6b7280; --text-bright: #eef0f5;
+    --col1: rgba(74,127,165,0.06); --col2: rgba(196,124,62,0.06);
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Spectral', serif; min-height: 100dvh; display: flex; flex-direction: column; }
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Spectral', Georgia, serif;
-    min-height: 100dvh;
-    display: flex;
-    flex-direction: column;
-    overflow-x: hidden;
-  }
-
-  header {
-    padding: 18px 20px 14px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: var(--surface);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-
-  .logo {
-    font-family: 'Spectral', serif;
-    font-weight: 300;
-    font-size: 18px;
-    letter-spacing: 0.08em;
-    color: var(--text-bright);
-  }
+  header { padding: 18px 20px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--surface); position: sticky; top: 0; z-index: 100; }
+  .logo { font-weight: 300; font-size: 18px; letter-spacing: 0.08em; color: var(--text-bright); }
   .logo span { color: var(--accent); }
-
-  .mode-switch {
-    display: flex;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    overflow: hidden;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-  }
-  .mode-btn {
-    padding: 6px 12px;
-    background: transparent;
-    border: none;
-    color: var(--text-dim);
-    cursor: pointer;
-    transition: all 0.2s;
-  }
+  .mode-switch { display: flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+  .mode-btn { padding: 6px 12px; background: transparent; border: none; color: var(--text-dim); cursor: pointer; transition: all 0.2s; }
   .mode-btn.active { background: var(--accent); color: #fff; }
 
-  .controls {
-    padding: 16px 20px;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
-
+  .controls { padding: 16px 20px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 14px; }
   .mic-row { display: flex; align-items: center; gap: 14px; }
-
-  .rec-btn {
-    width: 52px; height: 52px;
-    border-radius: 50%;
-    border: 2px solid var(--accent);
-    background: transparent;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.2s;
-    flex-shrink: 0;
-  }
-  .rec-btn.recording {
-    border-color: #e05555;
-    background: rgba(224,85,85,0.12);
-    animation: pulse 1.4s ease-in-out infinite;
-  }
-  @keyframes pulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(224,85,85,0.3); }
-    50% { box-shadow: 0 0 0 10px rgba(224,85,85,0); }
-  }
+  .rec-btn { width: 52px; height: 52px; border-radius: 50%; border: 2px solid var(--accent); background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
+  .rec-btn.recording { border-color: #e05555; background: rgba(224,85,85,0.12); animation: pulse 1.4s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(224,85,85,0.3)} 50%{box-shadow:0 0 0 10px rgba(224,85,85,0)} }
   .rec-icon { font-size: 20px; }
-
   .meter-wrap { flex: 1; display: flex; flex-direction: column; gap: 6px; }
-  .meter-label {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px; color: var(--text-dim);
-    display: flex; justify-content: space-between;
-  }
+  .meter-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-dim); display: flex; justify-content: space-between; }
   .meter-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
-  .meter-fill {
-    height: 100%; width: 0%;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    border-radius: 3px; transition: width 0.1s;
-  }
-
-  .gain-row {
-    display: flex; align-items: center; gap: 10px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px; color: var(--text-dim);
-  }
-  .gain-row input[type=range] {
-    flex: 1; -webkit-appearance: none;
-    height: 4px; border-radius: 2px;
-    background: var(--border); outline: none;
-  }
-  .gain-row input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 16px; height: 16px; border-radius: 50%;
-    background: var(--accent); cursor: pointer;
-  }
+  .meter-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 3px; transition: width 0.1s; }
+  .gain-row { display: flex; align-items: center; gap: 10px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-dim); }
+  .gain-row input[type=range] { flex: 1; -webkit-appearance: none; height: 4px; border-radius: 2px; background: var(--border); outline: none; }
+  .gain-row input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--accent); cursor: pointer; }
   .gain-val { width: 34px; text-align: right; color: var(--text); }
-
-  .noise-row {
-    display: flex; align-items: center; justify-content: space-between;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px; color: var(--text-dim);
-  }
-  .toggle {
-    width: 36px; height: 20px;
-    background: var(--border); border-radius: 10px;
-    cursor: pointer; position: relative;
-    transition: background 0.2s; border: none;
-  }
+  .noise-row { display: flex; align-items: center; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-dim); }
+  .toggle { width: 36px; height: 20px; background: var(--border); border-radius: 10px; cursor: pointer; position: relative; transition: background 0.2s; border: none; }
   .toggle.on { background: var(--accent); }
-  .toggle::after {
-    content: ''; position: absolute;
-    width: 14px; height: 14px; background: #fff;
-    border-radius: 50%; top: 3px; left: 3px;
-    transition: left 0.2s;
-  }
+  .toggle::after { content: ''; position: absolute; width: 14px; height: 14px; background: #fff; border-radius: 50%; top: 3px; left: 3px; transition: left 0.2s; }
   .toggle.on::after { left: 19px; }
 
-  .status-bar {
-    padding: 8px 20px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px; color: var(--text-dim);
-    background: var(--bg);
-    border-bottom: 1px solid var(--border);
-    min-height: 30px;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .status-dot {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: var(--text-dim); flex-shrink: 0;
-  }
+  .status-bar { padding: 8px 20px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-dim); background: var(--bg); border-bottom: 1px solid var(--border); min-height: 30px; display: flex; align-items: center; gap: 8px; }
+  .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-dim); flex-shrink: 0; }
   .status-dot.active { background: #4caf50; animation: blink 1s infinite; }
-  .status-dot.error  { background: #e05555; }
+  .status-dot.error { background: #e05555; }
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-  .table-header {
-    display: grid; grid-template-columns: 1fr 1fr 1fr;
-    gap: 1px; background: var(--border);
-    border-bottom: 2px solid var(--border);
-    position: sticky; top: 81px; z-index: 90;
-  }
-  .col-head {
-    padding: 10px 14px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px; letter-spacing: 0.1em;
-    text-transform: uppercase; color: var(--text-dim);
-    background: var(--surface);
-  }
+  .table-header { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border-bottom: 2px solid var(--border); position: sticky; top: 81px; z-index: 90; }
+  .col-head { padding: 10px 14px; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); background: var(--surface); }
   .col-head:nth-child(1) { color: var(--accent); }
   .col-head:nth-child(2) { color: var(--accent2); }
-  .col-head:nth-child(3) { color: var(--accent3); }
 
-  .phrases {
-    flex: 1; overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 40px;
-  }
-
-  .empty-state {
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    padding: 60px 30px; gap: 12px;
-    color: var(--text-dim); font-style: italic;
-    font-size: 15px; text-align: center; opacity: 0.6;
-  }
+  .phrases { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 40px; }
+  .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 30px; gap: 12px; color: var(--text-dim); font-style: italic; font-size: 15px; text-align: center; opacity: 0.6; }
   .empty-state .big { font-size: 36px; opacity: 0.4; }
 
-  .phrase-row {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 1px; background: var(--border);
-    border-bottom: 1px solid var(--border);
-    animation: rowIn 0.35s ease;
-  }
-  @keyframes rowIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  .col-cell {
-    padding: 14px; font-size: 14px;
-    line-height: 1.65; position: relative;
-  }
+  .phrase-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border-bottom: 1px solid var(--border); animation: rowIn 0.35s ease; }
+  @keyframes rowIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+  .col-cell { padding: 14px; font-size: 14px; line-height: 1.65; }
   .col-cell:nth-child(1) { background: var(--col1); }
   .col-cell:nth-child(2) { background: var(--col2); }
-  .col-cell:nth-child(3) { background: var(--col3); font-size: 12px; color: var(--text-dim); font-style: italic; }
+  .ts { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--text-dim); opacity: 0.5; margin-top: 6px; }
 
-  .play-btn {
-    position: absolute; top: 10px; right: 10px;
-    width: 24px; height: 24px; border-radius: 50%;
-    border: 1px solid var(--accent2); background: transparent;
-    color: var(--accent2); font-size: 10px; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    opacity: 0.6; transition: opacity 0.2s;
-  }
-  .play-btn:hover { opacity: 1; }
-
-  .phrase-row.loading .col-cell { color: transparent; overflow: hidden; }
-  .phrase-row.loading .col-cell::after {
-    content: ''; position: absolute; inset: 14px; border-radius: 4px;
-    background: linear-gradient(90deg, var(--border) 25%, var(--surface) 50%, var(--border) 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.4s infinite;
-  }
-  @keyframes shimmer {
-    from { background-position: 200% 0; }
-    to   { background-position: -200% 0; }
-  }
-
-  .ts {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9px; color: var(--text-dim);
-    opacity: 0.5; margin-top: 6px;
-  }
-
-  .phrases::-webkit-scrollbar { width: 4px; }
-  .phrases::-webkit-scrollbar-track { background: var(--bg); }
-  .phrases::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  .phrase-row.loading .col-cell { color: transparent; position: relative; overflow: hidden; }
+  .phrase-row.loading .col-cell::after { content: ''; position: absolute; inset: 14px; border-radius: 4px; background: linear-gradient(90deg, var(--border) 25%, var(--surface) 50%, var(--border) 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; }
+  @keyframes shimmer { from{background-position:200% 0} to{background-position:-200% 0} }
 </style>
 </head>
 <body>
@@ -274,10 +86,7 @@
       <span class="rec-icon" id="recIcon">🎙️</span>
     </button>
     <div class="meter-wrap">
-      <div class="meter-label">
-        <span>Уровень микрофона</span>
-        <span id="meterPct">0%</span>
-      </div>
+      <div class="meter-label"><span>Уровень микрофона</span><span id="meterPct">0%</span></div>
       <div class="meter-bar"><div class="meter-fill" id="meterFill"></div></div>
     </div>
   </div>
@@ -311,28 +120,17 @@
 </div>
 
 <script>
-// ══════════════════════════════════
-//  STATE
-// ══════════════════════════════════
 let mode = 'whisper';
 let isRecording = false;
 let noiseOn = true;
 let gainValue = 1.0;
-
 let audioCtx, gainNode, analyserNode, sourceNode, stream;
 let mediaRecorder, chunks = [];
-
-// WebRTC
-let pc = null;
-let dc = null;
-let realtimeAudio = null;
+let pc = null, dc = null;
 let reconnectTimer = null;
-
 let wakeLock = null;
+let accumulatedTranscript = '';
 
-// ══════════════════════════════════
-//  UI
-// ══════════════════════════════════
 function setStatus(msg, state = '') {
   document.getElementById('statusText').textContent = msg;
   const dot = document.getElementById('statusDot');
@@ -351,70 +149,21 @@ function now() {
   return new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 }
 
-// ══════════════════════════════════
-//  PHRASE ROWS
-// ══════════════════════════════════
 function addLoadingRow() {
   const el = document.getElementById('emptyState');
   if (el) el.remove();
   const row = document.createElement('div');
   row.className = 'phrase-row loading';
-  row.innerHTML = `<div class="col-cell">…</div><div class="col-cell">…</div><div class="col-cell">…</div>`;
+  row.innerHTML = `<div class="col-cell">…</div><div class="col-cell">…</div>`;
   document.getElementById('phrases').prepend(row);
   return row;
 }
 
-function fillRow(row, transcript, translation, explanation) {
+function fillRow(row, original, translation) {
   row.classList.remove('loading');
   row.innerHTML = `
-    <div class="col-cell">${transcript}<div class="ts">${now()}</div></div>
-    <div class="col-cell">
-      ${translation}
-    </div>`;
-}
-
-// ══════════════════════════════════
-//  TTS
-// ══════════════════════════════════
-async function speakText(text, btn) {
-  try {
-    if (btn) btn.textContent = '⏳';
-    const res = await fetch('/api/speak', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text })
-    });
-    if (!res.ok) throw new Error('TTS error');
-    const blob = await res.blob();
-    const url = URL.createObjectURL(blob);
-    const audio = new Audio(url);
-    audio.play();
-    audio.onended = () => { if (btn) btn.textContent = '▶'; };
-  } catch (e) {
-    if (btn) btn.textContent = '▶';
-  }
-}
-
-// ══════════════════════════════════
-//  METER
-// ══════════════════════════════════
-let meterFrame;
-function startMeter() {
-  const buf = new Uint8Array(analyserNode.frequencyBinCount);
-  function tick() {
-    analyserNode.getByteFrequencyData(buf);
-    const avg = buf.reduce((a, b) => a + b, 0) / buf.length;
-    const pct = Math.min(100, (avg / 128) * 100 * gainValue);
-    document.getElementById('meterFill').style.width = pct + '%';
-    document.getElementById('meterPct').textContent = Math.round(pct) + '%';
-    meterFrame = requestAnimationFrame(tick);
-  }
-  tick();
-}
-function stopMeter() {
-  cancelAnimationFrame(meterFrame);
-  document.getElementById('meterFill').style.width = '0%';
-  document.getElementById('meterPct').textContent = '0%';
+    <div class="col-cell">${original}<div class="ts">${now()}</div></div>
+    <div class="col-cell">${translation}</div>`;
 }
 
 function setGain(val) {
@@ -436,9 +185,25 @@ function releaseWakeLock() {
   if (wakeLock) { wakeLock.release(); wakeLock = null; }
 }
 
-// ══════════════════════════════════
-//  RECORDING
-// ══════════════════════════════════
+let meterFrame;
+function startMeter() {
+  const buf = new Uint8Array(analyserNode.frequencyBinCount);
+  function tick() {
+    analyserNode.getByteFrequencyData(buf);
+    const avg = buf.reduce((a, b) => a + b, 0) / buf.length;
+    const pct = Math.min(100, (avg / 128) * 100 * gainValue);
+    document.getElementById('meterFill').style.width = pct + '%';
+    document.getElementById('meterPct').textContent = Math.round(pct) + '%';
+    meterFrame = requestAnimationFrame(tick);
+  }
+  tick();
+}
+function stopMeter() {
+  cancelAnimationFrame(meterFrame);
+  document.getElementById('meterFill').style.width = '0%';
+  document.getElementById('meterPct').textContent = '0%';
+}
+
 async function toggleRecording() {
   if (isRecording) { stopRecording(); } else { await startRecording(); }
 }
@@ -448,27 +213,20 @@ async function startRecording() {
     stream = await navigator.mediaDevices.getUserMedia({
       audio: { echoCancellation: true, noiseSuppression: noiseOn, autoGainControl: false }
     });
-
-    audioCtx  = new AudioContext({ sampleRate: 24000 });
+    audioCtx = new AudioContext({ sampleRate: 24000 });
     sourceNode = audioCtx.createMediaStreamSource(stream);
-    gainNode   = audioCtx.createGain();
+    gainNode = audioCtx.createGain();
     gainNode.gain.value = gainValue;
     analyserNode = audioCtx.createAnalyser();
     analyserNode.fftSize = 256;
     sourceNode.connect(gainNode);
     gainNode.connect(analyserNode);
-
     isRecording = true;
     document.getElementById('recBtn').classList.add('recording');
     document.getElementById('recIcon').textContent = '⏹';
     startMeter();
     acquireWakeLock();
-
-    if (mode === 'whisper') {
-      startWhisperRecording();
-    } else {
-      await startRealtimeSession();
-    }
+    if (mode === 'whisper') { startWhisperRecording(); } else { await startRealtimeSession(); }
   } catch (e) {
     setStatus('Ошибка микрофона: ' + e.message, 'error');
   }
@@ -480,20 +238,15 @@ function stopRecording() {
   document.getElementById('recIcon').textContent = '🎙️';
   stopMeter();
   releaseWakeLock();
-
   if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
   if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
   if (audioCtx) { audioCtx.close(); audioCtx = null; }
   if (dc) { dc.close(); dc = null; }
   if (pc) { pc.close(); pc = null; }
   if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }
-
   setStatus('Остановлено.');
 }
 
-// ══════════════════════════════════
-//  WHISPER MODE
-// ══════════════════════════════════
 function startWhisperRecording() {
   const dest = audioCtx.createMediaStreamDestination();
   gainNode.connect(dest);
@@ -525,8 +278,7 @@ async function sendToWhisper(blob) {
     const data = await res.json();
     if (data.error) throw new Error(data.error);
     if (!data.transcript) { row.remove(); setStatus('Речь не обнаружена', ''); return; }
-    fillRow(row, data.transcript, data.translation, data.explanation);
-    speakText(data.translation, null);
+    fillRow(row, data.transcript, data.translation);
     setStatus('Готово. Слушаю...', 'active');
   } catch (e) {
     row.remove();
@@ -534,9 +286,6 @@ async function sendToWhisper(blob) {
   }
 }
 
-// ══════════════════════════════════
-//  REALTIME WebRTC MODE
-// ══════════════════════════════════
 async function startRealtimeSession() {
   setStatus('Получаю токен...', '');
   try {
@@ -544,92 +293,61 @@ async function startRealtimeSession() {
     const data = await res.json();
     if (data.error) throw new Error(data.error);
     const token = data.value || data.client_secret?.value || data.client_secret;
-    if (!token) throw new Error('Нет токена в ответе');
+    if (!token) throw new Error('Нет токена');
     await connectWebRTC(token);
   } catch (e) {
     setStatus('Ошибка токена: ' + e.message, 'error');
-    if (isRecording) {
-      reconnectTimer = setTimeout(() => startRealtimeSession(), 5000);
-    }
+    if (isRecording) reconnectTimer = setTimeout(() => startRealtimeSession(), 5000);
   }
 }
 
 async function connectWebRTC(token) {
   setStatus('Подключаю WebRTC...', '');
-
   pc = new RTCPeerConnection();
-
-  // Аудио из наушников (ответ модели) — нам не нужен, но добавляем для совместимости
-  pc.ontrack = (e) => {
-    if (!realtimeAudio) {
-      realtimeAudio = new Audio();
-      realtimeAudio.autoplay = false; // перевод делаем через TTS
-    }
-  };
-
-  // Добавляем микрофон
+  pc.ontrack = () => {};
   stream.getTracks().forEach(track => pc.addTrack(track, stream));
-
-  // Data channel для событий транскрипции
   dc = pc.createDataChannel('oai-events');
+
   dc.onopen = () => {
     setStatus('✅ Realtime подключён. Говорите!', 'active');
-
-    // Настраиваем сессию
     dc.send(JSON.stringify({
-     type: 'session.update',
-     session: {
-      type: 'realtime',
-      instructions: 'You are a live interpreter. Your ONLY job is to translate English speech to Russian. NEVER respond in English. NEVER greet or ask questions. Just translate. Format: ORIGINAL: [english] | TRANSLATION: [russian]'
-     }
+      type: 'session.update',
+      session: {
+        type: 'realtime',
+        instructions: 'You are a live interpreter. Your ONLY job is to translate English speech to Russian. NEVER respond in English. NEVER greet or ask questions. Just translate. Format: ORIGINAL: [english] | TRANSLATION: [russian]'
+      }
     }));
   };
 
   dc.onmessage = async (e) => {
     const ev = JSON.parse(e.data);
-      setStatus('Событие: ' + ev.type, '');
 
     if (ev.type === 'input_audio_buffer.speech_started') {
       setStatus('🎙️ Слушаю...', 'active');
     }
-        if (ev.type === 'response.output_audio_transcript.done') {
-         const full = ev.transcript?.trim();
-         if (!full) return;
-         let original = '—';
-         let translation = full;
-         const parts = full.split(/\|?\s*TRANSLATION:/i);
-         if (parts.length >= 2) {
-          original = parts[0].replace(/ORIGINAL:/i, '').trim();
-          translation = parts[1].trim();
-         }
-         const row = addLoadingRow();
-         fillRow(row, original, translation, '');
-         setStatus('Готово. Слушаю...', 'active');
-        }
 
-      if (ev.type === 'conversation.item.done' && ev.item?.role === 'user') {
+    if (ev.type === 'response.output_audio_transcript.delta') {
+      accumulatedTranscript += ev.delta || '';
+    }
 
-      const transcript = ev.transcript?.trim();
-      if (!transcript) {
-        setStatus('Нет текста: ' + JSON.stringify(item?.content), '');
-        return;
+    if (ev.type === 'response.output_audio_transcript.done') {
+      const full = ev.transcript?.trim() || accumulatedTranscript.trim();
+      accumulatedTranscript = '';
+      if (!full) return;
+      let original = '—';
+      let translation = full;
+      const parts = full.split(/\|?\s*TRANSLATION:/i);
+      if (parts.length >= 2) {
+        original = parts[0].replace(/ORIGINAL:/i, '').trim();
+        translation = parts[1].trim();
       }
-      if (!transcript) return;
       const row = addLoadingRow();
-      setStatus('Перевожу...', 'active');
-      try {
-        const res = await fetch('/api/translate-text', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: transcript })
-        });
-        const data = await res.json();
-        fillRow(row, transcript, data.translate;
-        setStatus('Готово. Слушаю...', 'active');
-      } catch (err) {
-        row.remove();
-        setStatus('Ошибка перевода: ' + err.message, 'error');
-      }
+      fillRow(row, original, translation);
+      setStatus('Готово. Слушаю...', 'active');
+    }
+
+    if (ev.type === 'response.done') {
+      accumulatedTranscript = '';
     }
 
     if (ev.type === 'error') {
@@ -644,25 +362,21 @@ async function connectWebRTC(token) {
     }
   };
 
-  // SDP обмен
   const offer = await pc.createOffer();
   await pc.setLocalDescription(offer);
 
   const sdpRes = await fetch(
     `https://api.openai.com/v1/realtime/calls?model=gpt-realtime-1.5`,
-      {
+    {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/sdp'
-      },
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/sdp' },
       body: offer.sdp
     }
   );
 
   if (!sdpRes.ok) {
     const err = await sdpRes.text();
-    throw new Error('SDP ошибка: ' + err);
+    throw new Error('SDP: ' + err);
   }
 
   const answerSdp = await sdpRes.text();
