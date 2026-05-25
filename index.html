@@ -336,7 +336,7 @@ async function connectWebRTC(token) {
       session: {
         type: 'realtime',
         instructions: 'You are a live interpreter. Your ONLY job is to translate English speech to Russian. NEVER respond in English. NEVER greet or ask questions. Just translate. Format: ORIGINAL: [english] | TRANSLATION: [russian]',
-        silence_duration_ms: silenceDuration
+        //silence_duration_ms: silenceDuration
       }
     }));
   };
