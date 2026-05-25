@@ -15,7 +15,25 @@ export default async function handler(req, res) {
       body: JSON.stringify({
        session: {
         type: 'realtime',
-        instructions: 'You are a translator. When you hear English speech, respond ONLY with the Russian translation. No explanations, no greetings, just the translation.'
+        if (ev.type === 'response.done') {
+          const full = accumulatedTranscript.trim();
+          accumulatedTranscript = '';
+          if (!full) return;
+  
+          let original = '—';
+          let translation = full;
+  
+          if (full.includes('ORIGINAL:') && full.includes('| TRANSLATION:')) {
+           const parts = full.split('| TRANSLATION:');
+           original = parts[0].replace('ORIGINAL:', '').trim();
+           translation = parts[1]?.trim() || full;
+          }
+  
+          const row = addLoadingRow();
+          fillRow(row, original, translation, '');
+          speakText(translation, null);
+          setStatus('Готово. Слушаю...', 'active');
+        }
        }
       }),
     });
