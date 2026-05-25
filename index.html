@@ -370,7 +370,6 @@ function fillRow(row, transcript, translation, explanation) {
     <div class="col-cell">${transcript}<div class="ts">${now()}</div></div>
     <div class="col-cell">
       ${translation}
-      <button class="play-btn" onclick="speakText(${JSON.stringify(translation)}, this)">▶</button>
     </div>`;
 }
 
@@ -605,7 +604,6 @@ async function connectWebRTC(token) {
          }
          const row = addLoadingRow();
          fillRow(row, original, translation, '');
-         speakText(translation, null);
          setStatus('Готово. Слушаю...', 'active');
         }
 
@@ -626,8 +624,7 @@ async function connectWebRTC(token) {
           body: JSON.stringify({ text: transcript })
         });
         const data = await res.json();
-        fillRow(row, transcript, data.translation, data.explanation);
-        speakText(data.translation, null);
+        fillRow(row, transcript, data.translate;
         setStatus('Готово. Слушаю...', 'active');
       } catch (err) {
         row.remove();
