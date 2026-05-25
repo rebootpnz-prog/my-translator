@@ -164,6 +164,10 @@ function setMode(m) {
 function setSilence(val) {
   silenceDuration = parseInt(val);
   document.getElementById('silenceVal').textContent = val + 'мс';
+  if (isRecording && mode === 'realtime') {
+    stopRecording();
+    startRecording();
+  }
 }
 
 function now() {
@@ -310,7 +314,11 @@ async function sendToWhisper(blob) {
 async function startRealtimeSession() {
   setStatus('Получаю токен...', '');
   try {
-    const res = await fetch('/api/token', { method: 'POST' });
+    const res = await fetch('/api/token', {
+     method: 'POST',
+     headers: { 'Content-Type': 'application/json' },
+     body: JSON.stringify({ silence_duration_ms: silenceDuration })
+    });
     const data = await res.json();
     if (data.error) throw new Error(data.error);
     const token = data.value || data.client_secret?.value || data.client_secret;
