@@ -708,7 +708,7 @@ async function startRealtimeSession() {
 }
 
 function connectRealtime(token) {
-  const url = `wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2025-06-03`;
+  const url = `wss://api.openai.com/v1/realtime?model=gpt-realtime`;
   ws = new WebSocket(url, ['realtime', `openai-insecure-api-key.${token}`]);
   ws.onopen = () => {
     setStatus('Realtime подключён. Говорите!', 'active');
