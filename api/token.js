@@ -20,13 +20,14 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
-    if (!response.ok) {
+        if (!response.ok) {
       return res.status(response.status).json({ 
         error: JSON.stringify(data)
       });
     }
 
-    res.status(200).json({ client_secret: data.client_secret });
+    // Возвращаем весь ответ для отладки
+    res.status(200).json(data);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
